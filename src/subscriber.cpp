@@ -18,19 +18,19 @@ int main (int argc, char *argv[])
   //  Socket to talk to server
   cout << "Subscribed" << endl;
   zmq::socket_t subscriber (context, ZMQ_SUB);
+  // TODO I dont know how ZMQ_IDENTITY works: subscriber.setsockopt(ZMQ_IDENTITY, "dsss", 4);
+  subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
   subscriber.connect("tcp://localhost:55551");
 
-  //  Subscribe to messages containing hello
-  const char *filter = "hello ";
-  subscriber.setsockopt(ZMQ_SUBSCRIBE, filter, strlen (filter));
 
-  //  Process 2 updates
-  for (int i = 0; i < 2; i++)
+  while (true)
   {
+    cout << "Listening"; cout.flush();
     zmq::message_t update;
     subscriber.recv(&update);
 
     string received_data {static_cast<char*>(update.data())};
+    cout << ". OK: " << received_data << endl;
   }
 
   cout << "exit" << endl;

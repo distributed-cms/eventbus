@@ -4,26 +4,43 @@
 //  Carlos Martin Sanchez <carlosvin@gmail.com>
 //
 #include "zmq.hpp"
+#include <iostream>
+#include <thread>
+#include <chrono>
+
+using namespace std;
 
 int main () {
 
-    //  Prepare our context and publisher
+    //  Prepare our context
     zmq::context_t context (1);
+
+    // Prepare publisher
     zmq::socket_t publisher (context, ZMQ_PUB);
     publisher.bind("tcp://*:55551");
-    publisher.bind("ipc://eventsource.ipc");
+    //publisher.bind("ipc://eventsource.ipc");
 
-    zmq::socket_t receive (context, ZMQ_REP);
-    receive.bind("tcp://*:55552");
+    // prepare servers listener
+    zmq::socket_t server_listener (context, ZMQ_REP);
+    server_listener.bind ("tcp://*:55552");
 
+
+
+    const string reply_msg {"OK"};
     while (true) {
-        zmq::message_t received_msg{20};
-        if (receive.recv(&received_msg))
-        {
-            //  Send message to all subscribers
-            publisher.send(received_msg);
-	}
+        cout << "Listening events...";cout.flush();
 
+        zmq::message_t received_msg;
+        server_listener.recv(&received_msg);
+	string received_string {static_cast<char *>(received_msg.data())};
+
+	//  Send message to all subscribers
+        cout << "Publishing:\t" << received_string;
+        publisher.send(received_msg);
+	this_thread::sleep_for(1ms);
+        cout << ". Published." << endl;
+
+	server_listener.send (reply_msg.c_str(), reply_msg.size());
 
     }
     return 0;

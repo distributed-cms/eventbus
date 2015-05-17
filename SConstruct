@@ -10,7 +10,7 @@ LIBRARIES = ['zmq', 'pthread', 'dl']
 env = Environment(
     CPPPATH=[SOURCE_DIR],
     LIBS=LIBRARIES,
-    CXXFLAGS=['-std=c++11', '-g'],
+    CXXFLAGS=['-std=c++14', '-g'],
     ENV=os.environ,
 )
 
@@ -24,7 +24,7 @@ prog = env.Program('bin/'+ NAME, [SOURCE_MAIN], LIBS=LIBRARIES)
 
 subscriber = env.Program('bin/subscriber',  Glob(SOURCE_DIR + '/subscriber.cpp') , LIBS=LIBRARIES)
 
-publisher = env.Program('bin/publisher',  Glob(SOURCE_DIR + '/publisher.cpp') , LIBS=LIBRARIES)
+eventbus_publisher = env.Program('bin/eventbus_publisher',  Glob(SOURCE_DIR + '/eventbus_publisher.cpp') , LIBS=LIBRARIES)
 
 """
 Install
