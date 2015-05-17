@@ -22,6 +22,9 @@ Build
 #LIBRARIES.append(lib)
 prog = env.Program('bin/'+ NAME, [SOURCE_MAIN], LIBS=LIBRARIES)
 
+subscriber = env.Program('bin/subscriber',  Glob(SOURCE_DIR + '/subscriber.cpp') , LIBS=LIBRARIES)
+
+publisher = env.Program('bin/publisher',  Glob(SOURCE_DIR + '/publisher.cpp') , LIBS=LIBRARIES)
 
 """
 Install

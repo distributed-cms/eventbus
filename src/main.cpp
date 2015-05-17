@@ -16,7 +16,6 @@ int main () {
     zmq::socket_t receive (context, ZMQ_REP);
     receive.bind("tcp://*:55552");
 
-
     while (true) {
         zmq::message_t received_msg{20};
         if (receive.recv(&received_msg))
