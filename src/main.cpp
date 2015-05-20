@@ -7,41 +7,57 @@
 #include <iostream>
 #include <thread>
 #include <chrono>
+#include <tuple>
 
 using namespace std;
 
-int main () {
+constexpr unsigned BASE_PORT = 55550;
+const string BASE_URL = "tcp://*:";
 
-    //  Prepare our context
-    zmq::context_t context (1);
+int get_port(int argc, char ** argv, int port_position)
+{
+	return argc > port_position ? atoi(argv[port_position]) : BASE_PORT +  port_position;
+}
 
-    // Prepare publisher
-    zmq::socket_t publisher (context, ZMQ_PUB);
-    publisher.bind("tcp://*:55551");
-    //publisher.bind("ipc://eventsource.ipc");
+string get_url(unsigned port)
+{
+	return BASE_URL + to_string(port);
+}
 
-    // prepare servers listener
-    zmq::socket_t server_listener (context, ZMQ_REP);
-    server_listener.bind ("tcp://*:55552");
+int main (int argc, char ** argv)
+{
 
+	const string publisher_endpoint = get_url(get_port(argc, argv, 1));
+	const string request_endpoint = get_url(get_port(argc, argv, 2));
 
+	//  Prepare our context
+	zmq::context_t context (1);
 
-    const string reply_msg {"OK"};
-    while (true) {
-        cout << "Listening events...";cout.flush();
+	// Prepare publisher
+	zmq::socket_t publisher (context, ZMQ_PUB);
+	publisher.bind(publisher_endpoint.c_str());
+	cout << "Publisher endpoint\t" << publisher_endpoint << endl;
 
-        zmq::message_t received_msg;
-        server_listener.recv(&received_msg);
-	string received_string {static_cast<char *>(received_msg.data())};
+    	// prepare servers listener
+    	zmq::socket_t server_listener (context, ZMQ_REP);
+    	server_listener.bind (request_endpoint.c_str());
+	cout << "Requests endpoint\t" << request_endpoint << endl;
 
-	//  Send message to all subscribers
-        cout << "Publishing:\t" << received_string;
-        publisher.send(received_msg);
-	this_thread::sleep_for(1ms);
-        cout << ". Published." << endl;
+	const string reply_msg {"OK"};
+    	while (true) {
+		cout << "Listening events...";cout.flush();
 
-	server_listener.send (reply_msg.c_str(), reply_msg.size());
+		zmq::message_t received_msg;
+		server_listener.recv(&received_msg);
+		string received_string {static_cast<char *>(received_msg.data())};
 
-    }
-    return 0;
+		//  Send message to all subscribers
+		cout << "Publishing:\t" << received_string;
+		publisher.send(received_msg);
+		this_thread::sleep_for(1ms);
+		cout << ". Published." << endl;
+
+		server_listener.send (reply_msg.c_str(), reply_msg.size());
+    	}
+    	return 0;
 }
