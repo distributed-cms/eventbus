@@ -8,7 +8,3 @@ zmq_dep = find_library('zmq')
 #Executables
 executable('eventbus', 'main.cpp', dependencies : zmq_dep)
 
-executable('subscriber', 'subscriber.cpp', dependencies : zmq_dep)
-
-executable('eventbus_publisher', 'eventbus_publisher.cpp', dependencies : zmq_dep)
-
