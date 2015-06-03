@@ -1,0 +1,2 @@
+sudo docker build -t carlosvin/eventbus .
+sudo docker run --name eventbus -d carlosvin/eventbus
