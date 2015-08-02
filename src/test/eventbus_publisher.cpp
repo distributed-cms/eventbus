@@ -18,7 +18,7 @@ int main (int argc, char *argv[])
 
   //  Socket to talk to server
   zmq::socket_t requester (context, ZMQ_REQ);
-  requester.connect ("tcp://localhost:55552");
+  requester.connect ("tcp://localhost:50002");
 
   for (int i = 0; i < 10; i++)
   {
