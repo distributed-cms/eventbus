@@ -20,7 +20,7 @@ int main (int argc, char *argv[])
   zmq::socket_t subscriber (context, ZMQ_SUB);
   // TODO I dont know how ZMQ_IDENTITY works: subscriber.setsockopt(ZMQ_IDENTITY, "dsss", 4);
   subscriber.setsockopt(ZMQ_SUBSCRIBE, "", 0);
-  subscriber.connect("tcp://localhost:55551");
+  subscriber.connect("tcp://0.0.0.0:50001");
 
 
   while (true)
